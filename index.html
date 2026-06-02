@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistem Manajemen Perpustakaan</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+  <style>
+    /* VARIABEL TEMA MODERN */
+    :root {
+      --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+      
+      /* Palette Warna Premium Slate / Ocean Blue */
+      --color-bg-main: #f8fafc;
+      --color-background-primary: #ffffff;
+      --color-background-secondary: #f1f5f9;
+      --color-background-tertiary: #e2e8f0;
+      
+      --color-primary: #0f172a;
+      --color-primary-light: #1e293b;
+      --color-accent: #2563eb;
+      --color-accent-hover: #1d4ed8;
+      --color-accent-light: #eff6ff;
+      
+      --color-text-primary: #0f172a;
+      --color-text-secondary: #475569;
+      --color-text-tertiary: #94a3b8;
+      
+      --color-border-primary: #e2e8f0;
+      --color-border-secondary: #cbd5e1;
+      --color-border-tertiary: #f1f5f9;
+      
+      --color-danger: #ef4444;
+      --color-danger-bg: #fef2f2;
+      --color-success: #22c55e;
+      --color-success-bg: #f0fdf4;
+      
+      --border-radius-md: 8px;
+      --border-radius-lg: 12px;
+      --box-shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+      --box-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+      --box-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      background-color: var(--color-bg-main);
+      font-family: var(--font-sans);
+      color: var(--color-text-primary);
+      padding: 1.5rem;
+      display: flex;
+      justify-content: center;
+    }
+
+    .wrap { 
+      width: 100%;
+      max-width: 1000px;
+      padding: 0; 
+    }
+
+    /* KARTU UTAMA & TATA LETAK */
+    .card { 
+      background: var(--color-background-primary); 
+      border: 1px solid var(--color-border-primary); 
+      border-radius: var(--border-radius-lg); 
+      padding: 1.5rem; 
+      margin-bottom: 1.5rem; 
+      box-shadow: var(--box-shadow-md);
+    }
+    
+    .card-head { 
+      display: flex; 
+      align-items: center; 
+      gap: 10px; 
+      padding-bottom: 16px; 
+      border-bottom: 1px solid var(--color-border-primary); 
+      margin-bottom: 1.5rem; 
+    }
+    
+    .card-head i { font-size: 22px; color: var(--color-accent); }
+    .card-head .title { font-size: 16px; font-weight: 600; color: var(--color-text-primary); }
+    .card-head .sub { font-size: 13px; color: var(--color-text-secondary); margin-left: auto; }
+
+    /* MENU NAVIGASI / TOPBAR */
+    .topbar { 
+      display: flex; 
+      gap: 6px; 
+      background: var(--color-background-primary); 
+      border: 1px solid var(--color-border-primary); 
+      border-radius: var(--border-radius-lg); 
+      overflow: hidden; 
+      margin-bottom: 1.5rem; 
+      padding: 6px;
+      box-shadow: var(--box-shadow-sm);
+    }
+    
+    .nav-item { 
+      padding: 10px 18px; 
+      font-size: 13.5px; 
+      font-weight: 500;
+      color: var(--color-text-secondary); 
+      cursor: pointer; 
+      border-radius: var(--border-radius-md);
+      display: flex; 
+      align-items: center; 
+      gap: 8px; 
+      transition: all 0.2s ease; 
+    }
+    
+    .nav-item:hover { 
+      background: var(--color-background-secondary); 
+      color: var(--color-text-primary);
+    }
+    
+    .nav-item.active { 
+      background: var(--color-primary); 
+      color: #ffffff; 
+      font-weight: 500; 
+    }
+    
+    .nav-item i { font-size: 16px; }
+
+    /* FORM DAN INPUT ELEMENT */
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 20px; }
+    .full { grid-column: 1 / -1; }
+    .fg { display: flex; flex-direction: column; gap: 6px; }
+    .lbl { font-size: 13px; font-weight: 500; color: var(--color-text-secondary); }
+    .req { color: var(--color-danger); margin-left: 2px; }
+    
+    .fg input, .fg select, .fg textarea {
+      font-family: var(--font-sans); 
+      font-size: 13.5px;
+      padding: 9px 12px; 
+      border: 1px solid var(--color-border-secondary);
+      border-radius: var(--border-radius-md); 
+      background: var(--color-background-primary);
+      color: var(--color-text-primary); 
+      outline: none; 
+      width: 100%; 
+      transition: all 0.15s ease;
+    }
+    
+    .fg input:focus, .fg select:focus, .fg textarea:focus {
+      border-color: var(--color-accent); 
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+      background: var(--color-background-primary);
+    }
+    
+    .fg input::placeholder, .fg textarea::placeholder {
+      color: var(--color-text-tertiary);
+    }
+    
+    .fg input.err, .fg select.err { 
+      border-color: var(--color-danger); 
+      background: var(--color-danger-bg); 
+    }
+    
+    .fg textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
+    .hint { font-size: 11px; color: var(--color-text-tertiary); margin-top: 2px; }
+    .errmsg { font-size: 11px; color: var(--color-danger); font-weight: 500; display: none; margin-top: 2px; }
+    .errmsg.show { display: block; }
+
+    /* AUTO CODE GENERATOR BUTTON */
+    .kode-wrap { position: relative; }
+    .kode-wrap input { padding-right: 90px; font-family: var(--font-mono); font-weight: 500; letter-spacing: 0.03em; color: var(--color-accent); }
+    .kode-gen { 
+      position: absolute; 
+      right: 6px; 
+      top: 50%; 
+      transform: translateY(-50%); 
+      font-size: 11.5px; 
+      font-weight: 600;
+      padding: 5px 12px; 
+      background: var(--color-accent-light); 
+      color: var(--color-accent); 
+      border-radius: 6px; 
+      cursor: pointer; 
+      border: 1px solid rgba(37, 99, 235, 0.2); 
+      font-family: var(--font-sans); 
+      transition: all 0.15s ease;
+    }
+    .kode-gen:hover { background: var(--color-accent); color: #ffffff; }
+
+    /* STOK COUNTER WRAPPER */
+    .stok-wrap { display: flex; align-items: center; gap: 4px; max-width: 150px; }
+    .stok-btn { 
+      width: 36px; 
+      height: 36px; 
+      border: 1px solid var(--color-border-secondary); 
+      border-radius: var(--border-radius-md); 
+      background: var(--color-background-secondary); 
+      color: var(--color-text-primary); 
+      font-size: 18px; 
+      font-weight: 500;
+      cursor: pointer; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      flex-shrink: 0; 
+      transition: all 0.15s ease; 
+    }
+    .stok-btn:hover { background: var(--color-border-secondary); }
+    .stok-wrap input { text-align: center; font-weight: 600; height: 36px; }
+
+    /* KARTU AKSI / BOTTOM BUTTONS */
+    .action-row { 
+      display: flex; 
+      gap: 12px; 
+      padding-top: 1.25rem; 
+      border-top: 1px solid var(--color-border-primary); 
+      margin-top: 1rem; 
+    }
+    
+    .btn-batal, .btn-reset { 
+      flex: 1; 
+      padding: 10px; 
+      font-size: 13.5px; 
+      font-weight: 500;
+      font-family: var(--font-sans); 
+      background: #ffffff; 
+      color: var(--color-text-secondary); 
+      border: 1px solid var(--color-border-secondary); 
+      border-radius: var(--border-radius-md); 
+      cursor: pointer; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      gap: 8px; 
+      transition: all 0.15s ease; 
+    }
+    .btn-batal:hover, .btn-reset:hover { background: var(--color-background-secondary); color: var(--color-text-primary); }
+    
+    .btn-simpan { 
+      flex: 2; 
+      padding: 10px; 
+      font-size: 13.5px; 
+      font-weight: 600; 
+      font-family: var(--font-sans); 
+      background: var(--color-accent); 
+      color: #ffffff; 
+      border: none; 
+      border-radius: var(--border-radius-md); 
+      cursor: pointer; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      gap: 8px; 
+      box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+      transition: all 0.15s ease; 
+    }
+    .btn-simpan:hover { background: var(--color-accent-hover); box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3); }
+    .btn-simpan:active { transform: scale(0.98); }
+
+    /* SYSTEM MODAL INTERAKTIF (PENGGANTI TOAST) */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(15, 23, 42, 0.4);
+      backdrop-filter: blur(4px);
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .modal-box {
+      background: #ffffff;
+      padding: 28px 24px;
+      border-radius: var(--border-radius-lg);
+      width: 90%;
+      max-width: 360px;
+      text-align: center;
+      box-shadow: var(--box-shadow-lg);
+      border: 1px solid var(--color-border-primary);
+      animation: modalScale 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    
+    @keyframes modalScale {
+      from { transform: scale(0.9); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    
+    .modal-icon-circle {
+      width: 56px;
+      height: 56px;
+      border-radius: 99px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+      font-size: 26px;
+      margin-bottom: 16px;
+    }
+    .modal-icon-circle.success { background: var(--color-success-bg); color: var(--color-success); }
+    .modal-icon-circle.error { background: var(--color-danger-bg); color: var(--color-danger); }
+    
+    .modal-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; color: var(--color-text-primary); }
+    .modal-msg { font-size: 13.5px; color: var(--color-text-secondary); margin-bottom: 24px; line-height: 1.5; }
+    
+    .modal-btn-ok {
+      font-family: var(--font-sans);
+      font-size: 13.5px;
+      font-weight: 600;
+      padding: 9px 24px;
+      color: #ffffff;
+      border: none;
+      border-radius: var(--border-radius-md);
+      cursor: pointer;
+      width: 100%;
+      box-shadow: var(--box-shadow-sm);
+      transition: all 0.15s ease;
+    }
+    .modal-btn-ok.success-btn { background: var(--color-accent); }
+    .modal-btn-ok.success-btn:hover { background: var(--color-accent-hover); }
+    .modal-btn-ok.error-btn { background: var(--color-danger); }
+    .modal-btn-ok.error-btn:hover { background: #dc2626; }
+
+    /* TABEL DATA */
+    .daftar-view { display: none; }
+    .daftar-view.show { display: block; }
+    .tbl-wrap { overflow-x: auto; border: 1px solid var(--color-border-primary); border-radius: var(--border-radius-md); }
+    
+    table { width: 100%; border-collapse: collapse; font-size: 13px; table-layout: fixed; background: #ffffff; }
+    th { 
+      text-align: left; 
+      padding: 12px 14px; 
+      background: var(--color-background-secondary); 
+      color: var(--color-text-secondary); 
+      font-weight: 600; 
+      border-bottom: 1px solid var(--color-border-primary); 
+    }
+    td { padding: 12px 14px; border-bottom: 1px solid var(--color-border-primary); color: var(--color-text-primary); vertical-align: middle; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--color-bg-main); }
+    
+    .badge-kat { 
+      font-size: 11px; 
+      font-weight: 600;
+      padding: 4px 10px; 
+      border-radius: 99px; 
+      background: var(--color-accent-light); 
+      color: var(--color-accent); 
+    }
+    
+    .empty-state { text-align: center; padding: 3rem 1.5rem; color: var(--color-text-tertiary); font-size: 14px; }
+    .empty-state i { font-size: 40px; color: var(--color-text-tertiary); display: block; margin-bottom: 12px; }
+
+    /* METRIK DASHBOARD BERANDA */
+    .metric-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 1.5rem; }
+    .metric-card {
+      background: #ffffff; 
+      border: 1px solid var(--color-border-primary);
+      border-radius: var(--border-radius-lg); 
+      padding: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: var(--box-shadow-md);
+      border-left: 4px solid var(--color-accent);
+    }
+    .metric-card.stok { border-left-color: var(--color-success); }
+    .metric-icon {
+      width: 46px; height: 46px; border-radius: var(--border-radius-md);
+      display: flex; align-items: center; justify-content: center; font-size: 20px;
+    }
+    .metric-card.total .metric-icon { background: var(--color-accent-light); color: var(--color-accent); }
+    .metric-card.stok .metric-icon { background: var(--color-success-bg); color: var(--color-success); }
+    .metric-info { display: flex; flex-direction: column; }
+    .metric-title { font-size: 12.5px; font-weight: 500; color: var(--color-text-secondary); margin-bottom: 2px; }
+    .metric-value { font-size: 26px; font-weight: 700; color: var(--color-text-primary); line-height: 1; }
+
+    /* PANDUAN LIST */
+    .guideline-item { display: flex; gap: 12px; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px dashed var(--color-border-primary); }
+    .guideline-item:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+    .guideline-num { width: 22px; height: 22px; border-radius: 99px; background: var(--color-accent-light); color: var(--color-accent); font-weight: 600; font-size: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
+    /* PENERAPAN PREVENTIF VISIBILITAS FORM */
+    .form-view { display: block; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+  </style>
+</head>
+<body>
+
+<div class="wrap">
+  <h2 class="sr-only">Borang sistem data buku perpustakaan dengan menu navigasi, form input, dan daftar buku</h2>
+
+  <div style="display:flex; align-items:center; gap:14px; margin-bottom:1.5rem;">
+    <div style="width:44px; height:44px; border-radius:var(--border-radius-lg); background:var(--color-primary); display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow: var(--box-shadow-sm);">
+      <i class="ti ti-books" style="font-size:22px; color:#ffffff;" aria-hidden="true"></i>
+    </div>
+    <div>
+      <div style="font-size:16px; font-weight:700; color:var(--color-text-primary); letter-spacing:-0.01em;">Sistem Manajemen Perpustakaan</div>
+      <div style="font-size:12.5px; color:var(--color-text-secondary);">Data Koleksi Buku Digital terpusat</div>
+    </div>
+    <div style="margin-left:auto; font-size:12.5px; font-weight: 500; color:var(--color-text-secondary); background: var(--color-background-secondary); padding: 6px 12px; border-radius: 20px;" id="tgl-display"></div>
+  </div>
+
+  <div class="topbar">
+    <div class="nav-item" onclick="showView('beranda')"><i class="ti ti-home" aria-hidden="true"></i> Beranda</div>
+    <div class="nav-item active" id="nav-tambah" onclick="showView('tambah')"><i class="ti ti-plus" aria-hidden="true"></i> Tambah Buku</div>
+    <div class="nav-item" id="nav-daftar" onclick="showView('daftar')"><i class="ti ti-list" aria-hidden="true"></i> Daftar Koleksi <span id="jml-badge" style="background:var(--color-accent); color:#ffffff; font-size:11px; font-weight:700; padding:1px 6px; border-radius:99px; margin-left:6px;">0</span></div>
+    <div class="nav-item" onclick="showView('cari')"><i class="ti ti-search" aria-hidden="true"></i> Cari Buku</div>
+    <div class="nav-item" onclick="showView('keluar')" style="margin-left: auto; color: var(--color-danger);"><i class="ti ti-logout" aria-hidden="true"></i> Keluar</div>
+  </div>
+
+  <div id="modal-notif" class="modal-overlay">
+    <div class="modal-box">
+      <div id="modal-icon-bg" class="modal-icon-circle">
+        <i id="modal-icon" class="ti ti-circle-check" aria-hidden="true"></i>
+      </div>
+      <div id="modal-title" class="modal-title">Judul Notifikasi</div>
+      <div id="modal-msg" class="modal-msg">Pesan informasi sistem diletakkan di sini.</div>
+      <button id="modal-btn-ok" class="modal-btn-ok" onclick="tutupModal()">OK</button>
+    </div>
+  </div>
+
+  <div class="form-view" id="view-tambah">
+    <div class="card">
+      <div class="card-head">
+        <i class="ti ti-book-2" aria-hidden="true"></i>
+        <span class="title">Form Input Data Buku Baru</span>
+        <span class="sub">Kolom bertanda <span style="color:var(--color-danger); font-weight:bold;">*</span> wajib diisi</span>
+      </div>
+
+      <div class="grid2">
+        <div class="fg">
+          <label class="lbl">Kode Buku <span class="req">*</span></label>
+          <div class="kode-wrap">
+            <input type="text" id="kode" placeholder="cth. BK-2026-001" maxlength="20" />
+            <button class="kode-gen" onclick="genKode()">Auto</button>
+          </div>
+          <span class="hint">Kode indeks unik buku perpustakaan</span>
+          <span class="errmsg" id="err-kode">Kode buku wajib diisi.</span>
+        </div>
+        
+        <div class="fg">
+          <label class="lbl">Nomor ISBN</label>
+          <input type="text" id="isbn" placeholder="cth. 978-602-xxx-xxx-x" maxlength="20" />
+          <span class="hint">Kosongkan jika tidak tersedia ISBN</span>
+        </div>
+        
+        <div class="fg full">
+          <label class="lbl">Judul Lengkap Buku <span class="req">*</span></label>
+          <input type="text" id="judul" placeholder="Tulis nama judul buku secara lengkap dan jelas" />
+          <span class="errmsg" id="err-judul">Judul buku wajib diisi.</span>
+        </div>
+        
+        <div class="fg">
+          <label class="lbl">Nama Pengarang / Penulis <span class="req">*</span></label>
+          <input type="text" id="pengarang" placeholder="cth. Prof. Dr. Budi Santoso" />
+          <span class="errmsg" id="err-pengarang">Nama pengarang wajib diisi.</span>
+        </div>
+        
+        <div class="fg">
+          <label class="lbl">Nama Penerbit</label>
+          <input type="text" id="penerbit" placeholder="cth. Pustaka Utama, Gramedia" />
+        </div>
+        
+        <div class="fg">
+          <label class="lbl">Tahun Terbit</label>
+          <input type="number" id="tahun" placeholder="cth. 2026" min="1900" max="2099" />
+          <span class="errmsg" id="err-tahun">Tahun harus berupa angka yang valid.</span>
+        </div>
+        
+        <div class="fg">
+          <label class="lbl">Kategori Buku <span class="req">*</span></label>
+          <select id="kategori">
+            <option value="">-- Pilih klasifikasi kategori --</option>
+            <option>Pelajaran</option>
+            <option>Novel</option>
+            <option>Referensi</option>
+            <option>Ensiklopedia</option>
+            <option>Ilmu Pengetahuan</option>
+            <option>Agama</option>
+            <option>Biografi</option>
+            <option>Lainnya</option>
+          </select>
+          <span class="errmsg" id="err-kategori">Kategori wajib dipilih.</span>
+        </div>
+        
+        <div class="fg">
+          <label class="lbl">Jumlah Stok Buku <span class="req">*</span></label>
+          <div class="stok-wrap">
+            <button class="stok-btn" onclick="ubahStok(-1)" aria-label="Kurangi stok">−</button>
+            <input type="number" id="stok" value="1" min="0" max="9999" />
+            <button class="stok-btn" onclick="ubahStok(1)" aria-label="Tambah stok">+</button>
+          </div>
+          <span class="errmsg" id="err-stok">Jumlah stok harus berupa angka.</span>
+        </div>
+        
+        <div class="fg">
+          <label class="lbl">Lokasi Nomor Rak</label>
+          <input type="text" id="rak" placeholder="cth. Rak B-5, Koridor Utama Lantai 2" />
+          <span class="hint">Detail lokasi penyimpanan fisik buku</span>
+        </div>
+        
+        <div class="fg full">
+          <label class="lbl">Keterangan / Catatan Tambahan</label>
+          <textarea id="keterangan" placeholder="Tulis sinopsis ringkas, kondisi fisik buku, atau catatan penting lainnya..."></textarea>
+        </div>
+      </div>
+
+      <div class="action-row">
+        <button class="btn-batal" onclick="aksi('batal')"><i class="ti ti-arrow-left" aria-hidden="true"></i> Kembali</button>
+        <button class="btn-reset" onclick="resetForm()"><i class="ti ti-refresh" aria-hidden="true"></i> Reset Form</button>
+        <button class="btn-simpan" onclick="simpanData()"><i class="ti ti-device-floppy" aria-hidden="true"></i> Simpan Buku</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="daftar-view" id="view-daftar">
+    <div class="card">
+      <div class="card-head">
+        <i class="ti ti-table" aria-hidden="true"></i>
+        <span class="title">Daftar Buku Terdaftar</span>
+        <span class="sub" id="jml-label" style="font-weight: 600; background: var(--color-background-secondary); padding: 4px 10px; border-radius: 12px; color: var(--color-text-primary);">0 data</span>
+      </div>
+      <div class="tbl-wrap">
+        <table id="tabel-buku">
+          <thead>
+            <tr>
+              <th style="width:110px;">Kode Buku</th>
+              <th style="width:230px;">Judul Buku</th>
+              <th style="width:140px;">Pengarang</th>
+              <th style="width:110px;">Kategori</th>
+              <th style="width:65px; text-align:center;">Stok</th>
+              <th style="width:110px;">Lokasi Rak</th>
+              <th style="width:75px; text-align:center;">Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-buku">
+            <tr><td colspan="7" class="empty-state"><i class="ti ti-books" aria-hidden="true"></i>Belum ada data koleksi buku tersimpan</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="daftar-view" id="view-cari">
+    <div class="card">
+      <div class="card-head">
+        <i class="ti ti-search" aria-hidden="true"></i>
+        <span class="title">Modul Pencarian Koleksi</span>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr auto; gap:10px; margin-bottom:1.5rem;">
+        <input type="text" id="cari-input" placeholder="Masukkan judul, kode, nama pengarang, atau kategori buku..." oninput="cariData()" style="font-family: var(--font-sans); font-size: 13.5px; padding: 10px 14px; border: 1px solid var(--color-border-secondary); border-radius: var(--border-radius-md); outline: none;" />
+        <select id="cari-filter" onchange="cariData()" style="font-family:var(--font-sans); font-size:13.5px; padding:10px 14px; border:1px solid var(--color-border-secondary); border-radius:var(--border-radius-md); background:var(--color-background-secondary); color:var(--color-text-primary); outline:none; min-width:140px; font-weight:500;">
+          <option value="semua">Semua Kolom</option>
+          <option value="judul">Judul</option>
+          <option value="kode">Kode Buku</option>
+          <option value="pengarang">Pengarang</option>
+          <option value="kategori">Kategori</option>
+        </select>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:110px;">Kode Buku</th>
+              <th style="width:250px;">Judul Buku</th>
+              <th style="width:150px;">Pengarang</th>
+              <th style="width:110px;">Kategori</th>
+              <th style="width:65px; text-align:center;">Stok</th>
+              <th style="width:120px;">Lokasi Rak</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-cari">
+            <tr><td colspan="6" class="empty-state"><i class="ti ti-search" aria-hidden="true"></i>Silakan ketik kata kunci untuk mencari koleksi buku</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="daftar-view" id="view-beranda">
+    <div class="metric-grid">
+      <div class="metric-card total">
+        <div class="metric-icon"><i class="ti ti-book"></i></div>
+        <div class="metric-info">
+          <span class="metric-title">Total Judul Buku</span>
+          <span class="metric-value" id="stat-total">0</span>
+        </div>
+      </div>
+      <div class="metric-card stok">
+        <div class="metric-icon"><i class="ti ti-copy"></i></div>
+        <div class="metric-info">
+          <span class="metric-title">Total Stok Eksemplar</span>
+          <span class="metric-value" id="stat-stok">0</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="card-head">
+        <i class="ti ti-info-circle" aria-hidden="true"></i>
+        <span class="title">Panduan Alur Penggunaan Sistem</span>
+      </div>
+      <div style="font-size:13.5px; color:var(--color-text-secondary); line-height:1.7;">
+        <div class="guideline-item">
+          <span class="guideline-num">1</span>
+          <div>Buka menu <strong style="color:var(--color-text-primary); font-weight:600;">Tambah Buku</strong> untuk memasukkan data entri baru.</div>
+        </div>
+        <div class="guideline-item">
+          <span class="guideline-num">2</span>
+          <div>Lengkapi kolom formulir dengan benar, pastikan kolom dengan tanda bintang (<span style="color:var(--color-danger);">*</span>) tidak dikosongkan.</div>
+        </div>
+        <div class="guideline-item">
+          <span class="guideline-num">3</span>
+          <div>Klik tombol <strong style="color:var(--color-text-primary); font-weight:600;">Simpan Buku</strong>. Sistem otomatis melakukan pemeriksaan validasi data secara *real-time*.</div>
+        </div>
+        <div class="guideline-item">
+          <span class="guideline-num">4</span>
+          <div>Gunakan tab menu <strong style="color:var(--color-text-primary); font-weight:600;">Daftar Koleksi</strong> jika ingin meninjau daftar penuh atau menghapus rekaman data buku.</div>
+        </div>
+        <div class="guideline-item">
+          <span class="guideline-num">5</span>
+          <div>Gunakan fitur modul <strong style="color:var(--color-text-primary); font-weight:600;">Cari Buku</strong> untuk mencari buku spesifik dengan mengetikkan kata kunci yang fleksibel.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let dataBuku = [];
+let kodeCounter = 1;
+
+function tglStr() {
+  const d = new Date();
+  return d.toLocaleDateString('id-ID', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+}
+document.getElementById('tgl-display').textContent = tglStr();
+
+function showView(v) {
+  ['tambah','daftar','cari','beranda'].forEach(x => {
+    const el = document.getElementById('view-'+x);
+    if (el) { el.style.display = 'none'; el.classList.remove('show'); }
+  });
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+  const nav = {tambah:'nav-tambah', daftar:'nav-daftar'};
+  if (nav[v]) document.getElementById(nav[v]).classList.add('active');
+
+  const target = document.getElementById('view-'+v);
+  if (target) { target.style.display = 'block'; target.classList.add('show'); }
+
+  if (v === 'daftar') renderDaftar(dataBuku);
+  if (v === 'beranda') updateStat();
+  if (v === 'keluar') { showToastSuccess('Anda telah keluar dari sistem.'); showView('beranda'); }
+  if (v === 'cari') { document.getElementById('tbody-cari').innerHTML = '<tr><td colspan="6" class="empty-state"><i class="ti ti-search" aria-hidden="true"></i>Ketik kata kunci untuk mencari buku</td></tr>'; }
+}
+
+// Inisialisasi tampilan default awal
+document.getElementById('view-tambah').style.display = 'block';
+
+function genKode() {
+  const pad = String(kodeCounter).padStart(3,'0');
+  const yr = new Date().getFullYear();
+  document.getElementById('kode').value = 'BK-'+yr+'-'+pad;
+  kodeCounter++;
+}
+
+function ubahStok(d) {
+  const el = document.getElementById('stok');
+  const v = Math.max(0, (parseInt(el.value) || 0) + d);
+  el.value = v;
+}
+
+function clrErr() {
+  ['kode','judul','pengarang','kategori','stok','tahun'].forEach(f => {
+    const el = document.getElementById(f);
+    if (el) el.classList.remove('err');
+    const em = document.getElementById('err-'+f);
+    if (em) em.classList.remove('show');
+  });
+}
+
+function showErrField(f, msg) {
+  const el = document.getElementById(f);
+  const em = document.getElementById('err-'+f);
+  if (el) el.classList.add('err');
+  if (em) { em.textContent = msg; em.classList.add('show'); }
+}
+
+// FUNGSI PENGENDALI DATA MODAL GLOBAL (TIPE: SUCCESS ATAU ERROR)
+function pemicuModal(tipe, judulModal, pesanModal) {
+  const overlay = document.getElementById('modal-notif');
+  const iconBg = document.getElementById('modal-icon-bg');
+  const icon = document.getElementById('modal-icon');
+  const title = document.getElementById('modal-title');
+  const msg = document.getElementById('modal-msg');
+  const btn = document.getElementById('modal-btn-ok');
+
+  // Mengubah konten teks modal
+  title.textContent = judulModal;
+  msg.textContent = pesanModal;
+
+  // Konfigurasi tema warna & ikon dinamis modal sesuai tipe notifikasi
+  if (tipe === 'success') {
+    iconBg.className = 'modal-icon-circle success';
+    icon.className = 'ti ti-circle-check';
+    btn.className = 'modal-btn-ok success-btn';
+  } else {
+    iconBg.className = 'modal-icon-circle error';
+    icon.className = 'ti ti-alert-circle';
+    btn.className = 'modal-btn-ok error-btn';
+  }
+
+  // Tampilkan overlay modal ke layar
+  overlay.style.display = 'flex';
+}
+
+function tutupModal() {
+  document.getElementById('modal-notif').style.display = 'none';
+}
+
+// Interseptor Wrapper agar kompatibel dengan baris kode program lama Anda
+function showToastSuccess(msg) {
+  pemicuModal('success', 'Transaksi Berhasil', msg || 'Data buku berhasil disimpan ke server database.');
+}
+
+function showToastError(msg) {
+  pemicuModal('error', 'Gagal Memproses Data', msg || 'Harap periksa kembali isian form Anda.');
+}
+
+function simpanData() {
+  clrErr();
+  let valid = true;
+
+  const kode = document.getElementById('kode').value.trim();
+  const judul = document.getElementById('judul').value.trim();
+  const pengarang = document.getElementById('pengarang').value.trim();
+  const kategori = document.getElementById('kategori').value;
+  const stokRaw = document.getElementById('stok').value;
+  const stok = parseInt(stokRaw);
+  const tahunRaw = document.getElementById('tahun').value;
+
+  if (!kode) { showErrField('kode', 'Kode buku wajib diisi.'); valid = false; }
+  if (!judul) { showErrField('judul', 'Judul buku wajib diisi.'); valid = false; }
+  if (!pengarang) { showErrField('pengarang', 'Nama pengarang wajib diisi.'); valid = false; }
+  if (!kategori) { showErrField('kategori', 'Kategori wajib dipilih.'); valid = false; }
+  if (isNaN(stok) || stok < 0) { showErrField('stok', 'Jumlah stok harus berupa angka.'); valid = false; }
+  if (tahunRaw && (isNaN(parseInt(tahunRaw)) || parseInt(tahunRaw) < 1900 || parseInt(tahunRaw) > 2099)) {
+    showErrField('tahun', 'Tahun terbit tidak valid.'); valid = false;
+  }
+  if (dataBuku.find(b => b.kode === kode)) {
+    showErrField('kode', 'Kode buku sudah digunakan.'); valid = false;
+  }
+
+  if (!valid) { showToastError('Harap lengkapi seluruh data wajib yang ditandai asterisk (*) merah.'); return; }
+
+  dataBuku.push({
+    kode, judul, pengarang,
+    penerbit: document.getElementById('penerbit').value.trim(),
+    tahun: document.getElementById('tahun').value.trim(),
+    kategori,
+    isbn: document.getElementById('isbn').value.trim(),
+    stok,
+    rak: document.getElementById('rak').value.trim(),
+    keterangan: document.getElementById('keterangan').value.trim()
+  });
+
+  document.getElementById('jml-badge').textContent = dataBuku.length;
+  showToastSuccess('Buku berjudul "'+judul+'" sukses didaftarkan.');
+  resetForm();
+  updateStat();
+}
+
+function resetForm() {
+  ['kode','judul','pengarang','penerbit','isbn','rak','keterangan'].forEach(f => {
+    const el = document.getElementById(f);
+    if (el) el.value = '';
+  });
+  document.getElementById('tahun').value = '';
+  document.getElementById('kategori').selectedIndex = 0;
+  document.getElementById('stok').value = 1;
+  clrErr();
+}
+
+function renderDaftar(data) {
+  const tb = document.getElementById('tbody-buku');
+  document.getElementById('jml-label').textContent = data.length + ' data';
+  if (!data.length) {
+    tb.innerHTML = '<tr><td colspan="7" class="empty-state"><i class="ti ti-books" aria-hidden="true"></i>Belum ada data koleksi buku tersimpan</td></tr>';
+    return;
+  }
+  tb.innerHTML = data.map((b, i) => `
+    <tr>
+      <td style="font-family:var(--font-mono); font-size:12.5px; font-weight:600; color:var(--color-accent);">${b.kode}</td>
+      <td style="font-weight:600; white-space: normal;" title="${b.judul}">${b.judul}</td>
+      <td style="white-space: normal;">${b.pengarang}</td>
+      <td><span class="badge-kat">${b.kategori}</span></td>
+      <td style="text-align:center; font-weight:600;">${b.stok}</td>
+      <td style="font-size:12.5px; color:var(--color-text-secondary); white-space: normal;">${b.rak || '—'}</td>
+      <td style="text-align:center;">
+        <button onclick="hapusBuku(${i})" style="background:none; border:1px solid var(--color-border-secondary); border-radius:var(--border-radius-md); padding:5px 10px; cursor:pointer; font-size:13px; color:var(--color-danger); display:inline-flex; align-items:center; justify-content:center; transition:all 0.15s;" aria-label="Hapus buku ${b.judul}">
+          <i class="ti ti-trash" style="font-size:14px;" aria-hidden="true"></i>
+        </button>
+      </td>
+    </tr>`).join('');
+}
+
+function hapusBuku(i) {
+  const judul = dataBuku[i].judul;
+  dataBuku.splice(i, 1);
+  document.getElementById('jml-badge').textContent = dataBuku.length;
+  renderDaftar(dataBuku);
+  updateStat();
+  showToastSuccess('Data buku "'+judul+'" berhasil dihapus dari perpustakaan.');
+}
+
+function cariData() {
+  const q = document.getElementById('cari-input').value.trim().toLowerCase();
+  const filter = document.getElementById('cari-filter').value;
+  const tb = document.getElementById('tbody-cari');
+  if (!q) {
+    tb.innerHTML = '<tr><td colspan="6" class="empty-state"><i class="ti ti-search" aria-hidden="true"></i>Ketik kata kunci untuk mencari buku</td></tr>';
+    return;
+  }
+  const hasil = dataBuku.filter(b => {
+    if (filter === 'semua') return (b.judul+b.kode+b.pengarang+b.kategori).toLowerCase().includes(q);
+    return (b[filter]||'').toLowerCase().includes(q);
+  });
+  if (!hasil.length) {
+    tb.innerHTML = '<tr><td colspan="6" class="empty-state"><i class="ti ti-search" aria-hidden="true"></i>Tidak ditemukan buku yang sesuai</td></tr>';
+    return;
+  }
+  tb.innerHTML = hasil.map(b => `
+    <tr>
+      <td style="font-family:var(--font-mono); font-size:12.5px; font-weight:600; color:var(--color-accent);">${b.kode}</td>
+      <td style="font-weight:600; white-space: normal;">${b.judul}</td>
+      <td style="white-space: normal;">${b.pengarang}</td>
+      <td><span class="badge-kat">${b.kategori}</span></td>
+      <td style="text-align:center; font-weight:600;">${b.stok}</td>
+      <td style="font-size:12.5px; color:var(--color-text-secondary); white-space: normal;">${b.rak || '—'}</td>
+    </tr>`).join('');
+}
+
+function updateStat() {
+  document.getElementById('stat-total').textContent = dataBuku.length;
+  document.getElementById('stat-stok').textContent = dataBuku.reduce((s,b) => s+b.stok, 0);
+}
+
+function aksi(a) {
+  if (a === 'batal') { resetForm(); showView('daftar'); }
+}
+</script>
+</body>
+</html>
